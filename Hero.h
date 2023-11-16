@@ -5,7 +5,9 @@
  enum TypOfHeroe {
     SOLDIER,
     MAGICIAN,
-    KILLER
+    KILLER,
+    ARCHER,
+    
 };
 
 

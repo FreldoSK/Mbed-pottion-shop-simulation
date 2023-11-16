@@ -4,6 +4,10 @@ uint8_t * Table::getTableBuffer() {
     return this->tableBuffer;
 }
 
+void Table::setTableBuffer(uint8_t * buffer) {
+    this->tableBuffer = buffer;
+}
+
 uint8_t Table::getIndex() {
     return this->index;
 }
@@ -19,6 +23,8 @@ uint8_t Table::getCapacityOfTable() {
 void Table::setCapacityOfTable(const uint8_t& capacity) {
     this->capacityOfTable = capacity;
 }
+
+
 
 
 

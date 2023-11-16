@@ -6,6 +6,7 @@
 void Uart::readMessage(const char character) {
     while (this->serial_port.read(buffer, MAXIMUM_BUFFER_SIZE)) {
         if (buffer[0] == character) {
+            writeMessage("ENDE");
             return; 
         }
     }
