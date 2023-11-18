@@ -7,6 +7,15 @@
 
 
 
+struct DATA {
+    Mutex mutex;
+    ConditionVariable buyPotion;
+    ConditionVariable takePotion;
+
+    DATA() : buyPotion(mutex), takePotion(mutex) {}
+};
+
+
 class Table {
 private:
     uint8_t tableBuffer; 
@@ -22,4 +31,5 @@ public:
     void setIndex(const uint8_t& index);
     uint8_t getCapacityOfTable();
     void setCapacityOfTable(const uint8_t& capacity);
+    DATA data;
 };

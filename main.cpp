@@ -1,4 +1,3 @@
-#include "GameLogic.h"
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
@@ -6,25 +5,18 @@
 #include <string>
 #include <vector>
 #include "mbed.h"
-
-
-        /*
-        std::string heroType = "Hero type " + std::to_string(heroes[i]->getType());
-        std::string idHero = "Hero id " + std::to_string(heroes[i]->getId());
-        uart.writeMessage(heroType.c_str());
-        uart.writeMessage(idHero.c_str());
-        uart.writeMessage("\n");
-
-        */
-
+#include "Table.h"
+#include "Uart.h"
+#include "Shop.h"
+#include "Hero.h"
 
 
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    unsigned short numberOfHeroes = 10;  
+    unsigned short numberOfHeroes = 15;  
     uint8_t tableBuffer = 0;
-    uint8_t capacityOfTable = 5; 
-     
+    uint8_t capacityOfTable = 3; 
+
     Thread shop_thread;
     Thread heroes_thread[10];
 
@@ -32,26 +24,21 @@ int main() {
 
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
     std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, capacityOfTable);
-    std::shared_ptr<Shop> shop = std::make_shared<Shop>(2, numberOfHeroes);
-    std::shared_ptr<GameLogic> gameLogic = std::make_shared<GameLogic>(uart, shop);
-
+    std::shared_ptr<Shop> shop = std::make_shared<Shop>(2, numberOfHeroes, uart);
+  
     for (int i = 0; i < numberOfHeroes; i++) {
         TypOfHeroe randomHeroType = static_cast<TypOfHeroe>(std::rand() % (ARCHER + 1));
         uint8_t idOfHero = 1 + rand() % 10;
-        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType));
+        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart));
     }
 
-
     shop_thread.start([&]() {
-        gameLogic->shopFunction(table);
+        shop->shopFunction(table);
     });
 
     for (int i=0; i < numberOfHeroes; i++) {
-        heroes_thread[i].start([&]() {
-        gameLogic->heroFunction(table);
-    });
-
-    }
+        heroes[i]->heroFunction(table);
+    };
 
     shop_thread.join();
 
