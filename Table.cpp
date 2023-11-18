@@ -1,10 +1,10 @@
 #include "Table.h"
 
-uint8_t * Table::getTableBuffer() {
+uint8_t Table::getTableBuffer() {
     return this->tableBuffer;
 }
 
-void Table::setTableBuffer(uint8_t * buffer) {
+void Table::setTableBuffer(const uint8_t& buffer) {
     this->tableBuffer = buffer;
 }
 

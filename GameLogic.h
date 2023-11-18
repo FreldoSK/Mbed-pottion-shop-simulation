@@ -4,22 +4,20 @@
 #include "Shop.h"
 #include "Table.h"
 #include "Uart.h"
+#include <cstdint>
 #include <memory>
-
-
-
-
+#include <time.h>
 
 class GameLogic {
 private:
-    std::unique_ptr<Uart> uart;
-    std::unique_ptr<Hero> hero;
-    std::unique_ptr<Shop> shop;
+    std::shared_ptr<Uart> uart;
+    std::shared_ptr<Shop> shop;
 
+    void sleep_s(const uint8_t& sec);
 
-
-    void heroFunction(std::unique_ptr<Table> heroTable);
-    void shopFunction(std::unique_ptr<Table> shopTable);
 public:
-    void GamePlay();
+    GameLogic(std::shared_ptr<Uart> uart, std::shared_ptr<Shop> shop) 
+    : uart(uart), shop(shop) {}
+    void heroFunction(const std::shared_ptr<Table>& heroTable);
+    void shopFunction(const std::shared_ptr<Table>& shopTable);
 };

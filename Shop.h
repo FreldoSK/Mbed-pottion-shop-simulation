@@ -8,15 +8,13 @@
 class Shop {
 private:
 uint8_t time;
-std::vector<uint8_t> potions;
+unsigned short numberOfHeroes; 
 
 public:
-Shop(uint8_t time, std::vector<uint8_t>& potions)
-: time(time), potions(potions) {}
+Shop(const uint8_t& time, const unsigned short& numberOfHeroes)
+: time(time), numberOfHeroes(numberOfHeroes)  {}
 uint8_t getTime();
-std::vector<uint8_t> getPotions();
 void setTime(const uint8_t& time);
-void removePotionFromTable(std::unique_ptr<Table>& table);
-void addPotionToTable(std::unique_ptr<Table>& table);
-
+unsigned short getNumberOfHeroes();
+void setNumberOfHeroes(const unsigned short& numberOfHeroes);
 };
