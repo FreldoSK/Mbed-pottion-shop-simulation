@@ -1,5 +1,6 @@
 #include "Table.h"
 #include <cstdint>
+#include <memory>
 
 
 
@@ -41,5 +42,8 @@ void Table::sleep_s(const uint8_t& sec) {
     ThisThread::sleep_for(timeInSeconds);
 }
 
+std::shared_ptr<Data> Table::getData() {
+    return this->data;
+}
 
 

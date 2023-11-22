@@ -23,9 +23,9 @@ public:
     Hero(const unsigned short& id, const TypOfHeroe& typ, std::shared_ptr<Uart> uart, const uint8_t& time)
     : id(id), typ(typ), uart(uart), time(time) {}
     TypOfHeroe getType();
-    void setType(TypOfHeroe typ);
+    void setType(const TypOfHeroe& typ);
     unsigned short getId();
-    void setId(unsigned short id);
+    void setId(const unsigned short& id);
     void heroFunction(const std::shared_ptr<Table>& heroTable);
 };
 

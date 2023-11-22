@@ -1,6 +1,7 @@
 #include "Hero.h"
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 #include <string>
 
 
@@ -13,25 +14,27 @@ TypOfHeroe Hero::getType() {
 }
 
 
-void Hero::setId(unsigned short id) {
+void Hero::setId(const unsigned short& id) {
     this->id = id;
 }
 
-void Hero::setType(TypOfHeroe typ) {
+void Hero::setType(const TypOfHeroe& typ) {
     this->typ = typ;
 }
 
 
 void Hero::heroFunction(const std::shared_ptr<Table>& heroTable) {
     uint8_t * tableBuffer = heroTable->getTableBuffer();
+    std::shared_ptr<Data> data = heroTable->getData();
+
     heroTable->sleep_s(time);
     std::string hero_id_str = "HERO WITH ID " + std::to_string(getId()) + " GOES FOR POTION!";
     uart->writeMessage(hero_id_str.c_str());
 
-    heroTable->data.mutex.lock();
+    data->mutex.lock();
     while (heroTable->getIndex() <= 0) {
         uart->writeMessage("NOT ENOUGHT POTIONS WE NEED TO WAIT!");
-        heroTable->data.takePotion.wait();
+        data->takePotion.wait();
     }
 
     tableBuffer[heroTable->getIndex()]--;
@@ -41,8 +44,8 @@ void Hero::heroFunction(const std::shared_ptr<Table>& heroTable) {
 
     std::string take_str = "HERO WITH ID " + std::to_string(getId()) + " TAKE A POTION!";
     uart->writeMessage(take_str.c_str());
-    heroTable->data.buyPotion.notify_one();
-    heroTable->data.mutex.unlock();
+    data->buyPotion.notify_one();
+    data->mutex.unlock();
 
     std::string hero_ended_str = "HERO WITH ID " + std::to_string(getId()) + " ENDED!";
     uart->writeMessage(hero_ended_str.c_str());

@@ -11,6 +11,8 @@
 #include "Hero.h"
 
 
+
+
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     unsigned short numberOfHeroes = 15;  
@@ -18,6 +20,8 @@ int main() {
     uint8_t actualCapacityOfTable = 0;
     uint8_t index = 0;
     uint8_t * tableBuffer = (uint8_t*) malloc (sizeof(uint8_t) * capacityOfTable);
+    
+
 
     uint8_t heroTime = (1 + rand() % 3) / 100;
     uint8_t shopTime = 1 + rand() % 2;
@@ -27,8 +31,9 @@ int main() {
 
     std::vector<std::shared_ptr<Hero>> heroes;
 
+    std::shared_ptr<Data> data = std::make_unique<Data>();
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
-    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, index, capacityOfTable);
+    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, index, capacityOfTable, data);
     std::shared_ptr<Shop> shop = std::make_shared<Shop>(shopTime, numberOfHeroes, uart);
   
     for (int i = 0; i < numberOfHeroes; i++) {
