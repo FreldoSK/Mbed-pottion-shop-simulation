@@ -1,22 +1,22 @@
 #pragma once
 
 #include "Table.h"
-#include <vector>
+#include "Uart.h"
+#include <cstdint>
 #include <memory>
 
 
 class Shop {
 private:
 uint8_t time;
-std::vector<uint8_t> potions;
+unsigned short numberOfHeroes; 
+std::shared_ptr<Uart> uart;
+void sleep_s(const uint8_t& sec);
 
 public:
-Shop(uint8_t time, std::vector<uint8_t>& potions)
-: time(time), potions(potions) {}
-uint8_t getTime();
-std::vector<uint8_t> getPotions();
-void setTime(const uint8_t& time);
-void removePotionFromTable(std::unique_ptr<Table>& table);
-void addPotionToTable(std::unique_ptr<Table>& table);
-
+Shop(const uint8_t& time, const unsigned short& numberOfHeroes, std::shared_ptr<Uart> uart)
+: time(time), numberOfHeroes(numberOfHeroes), uart(uart)  {}
+unsigned short getNumberOfHeroes();
+void setNumberOfHeroes(const unsigned short& numberOfHeroes);
+void shopFunction(const std::shared_ptr<Table>& shopTable);
 };
