@@ -1,14 +1,8 @@
 #include "Shop.h"
+#include <cstdint>
 #include <string>
 
 
-uint8_t Shop::getTime() {
-    return this->time;
-}
-
-void Shop::setTime(const uint8_t &time) {
-    this->time = time; 
-}
 
 unsigned short Shop::getNumberOfHeroes() {
     return this->numberOfHeroes;
@@ -25,26 +19,29 @@ void Shop::sleep_s(const uint8_t& sec) {
 
 
 void Shop::shopFunction(const std::shared_ptr<Table>& shopTable) {
+    uint8_t * tableBuffer = shopTable->getTableBuffer();
+    uart->writeMessage("SHOP START WORKING!");
 
-    for (int i=0; i < getNumberOfHeroes(); i++) {
-        sleep_s(getTime());
-        uart->writeMessage("SHOP START WORKING!");
+    for (int i=0; i < this->numberOfHeroes; i++) {
+        shopTable->sleep_s(time);
         shopTable->data.mutex.lock();
 
-        while (shopTable->getCapacityOfTable() <= shopTable->getTableBuffer()) {
+        while (shopTable->getCapacityOfTable() <= shopTable->getactualCapacityOfTable()) {
             uart->writeMessage("TABLE IS FULL WE WILL WAIT UNTIL TABPLE WILL BE CLEAN!");
             shopTable->data.buyPotion.wait();
         }
 
-        std::string capacity_str = "ACTUAL NUMBER OF POTIONS ON TABLE : " + std::to_string(shopTable->getTableBuffer());
-        uart->writeMessage(capacity_str.c_str());
+        tableBuffer[shopTable->getIndex()]++;
+        shopTable->setIndex(shopTable->getIndex() + 1);
+        shopTable->setActualCapacityOfTable(shopTable->getactualCapacityOfTable() + 1);
+        shopTable->setTableBuffer(tableBuffer);
 
-
-        shopTable->setTableBuffer(shopTable->getTableBuffer() + 1);
         uart->writeMessage("ON TABLE IS ONE MORE POTION!");
         shopTable->data.takePotion.notify_one();
         shopTable->data.mutex.unlock();
         
     }
-    uart->writeMessage("SHOP ENDED !");
+    uart->writeMessage("SHOP ENDED!");
+
+
 }

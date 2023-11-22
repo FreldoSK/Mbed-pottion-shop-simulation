@@ -14,8 +14,13 @@
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     unsigned short numberOfHeroes = 15;  
-    uint8_t tableBuffer = 0;
     uint8_t capacityOfTable = 3; 
+    uint8_t actualCapacityOfTable = 0;
+    uint8_t index = 0;
+    uint8_t * tableBuffer = (uint8_t*) malloc (sizeof(uint8_t) * capacityOfTable);
+
+    uint8_t heroTime = (1 + rand() % 3) / 100;
+    uint8_t shopTime = 1 + rand() % 2;
 
     Thread shop_thread;
     Thread heroes_thread[10];
@@ -23,13 +28,14 @@ int main() {
     std::vector<std::shared_ptr<Hero>> heroes;
 
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
-    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, capacityOfTable);
-    std::shared_ptr<Shop> shop = std::make_shared<Shop>(2, numberOfHeroes, uart);
+    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, index, capacityOfTable);
+    std::shared_ptr<Shop> shop = std::make_shared<Shop>(shopTime, numberOfHeroes, uart);
   
     for (int i = 0; i < numberOfHeroes; i++) {
         TypOfHeroe randomHeroType = static_cast<TypOfHeroe>(std::rand() % (ARCHER + 1));
         uint8_t idOfHero = 1 + rand() % 10;
-        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart));
+        
+        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart, heroTime));
     }
 
     shop_thread.start([&]() {
@@ -47,7 +53,7 @@ int main() {
     }
     
 
-
+    free(tableBuffer);
 
     
 
