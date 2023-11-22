@@ -23,8 +23,8 @@ int main() {
     
 
 
-    uint8_t heroTime = (1 + rand() % 3) / 100;
-    uint8_t shopTime = 1 + rand() % 2;
+    uint8_t heroTime = 1 + rand() % 10;
+    uint8_t shopTime = 1 + rand() % 5;
 
     Thread shop_thread;
     Thread heroes_thread[10];
