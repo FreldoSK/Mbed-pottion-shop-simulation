@@ -1,8 +1,5 @@
 #include "Shop.h"
-#include <algorithm>
-#include <cstdint>
-#include <memory>
-#include <string>
+
 
 
 
@@ -45,7 +42,7 @@ void Shop::shopFunction(const std::shared_ptr<Table>& shopTable) {
         
     }
 
-    uart->writeMessage("fwfcwegv!");
+    uart->writeMessage("SHOP STOPED PRODUCTION OF POTIONS!!!");
 
 
 }

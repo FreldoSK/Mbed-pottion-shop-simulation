@@ -4,6 +4,9 @@
 #include "Uart.h"
 #include <cstdint>
 #include <memory>
+#include <cstdint>
+#include <string>
+
 
 enum TypOfHeroe {
     SOLDIER,

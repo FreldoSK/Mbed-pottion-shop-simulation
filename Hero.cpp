@@ -1,9 +1,5 @@
 #include "Hero.h"
-#include <cstdint>
-#include <cstdlib>
-#include <memory>
-#include <string>
-
+;
 
 unsigned short Hero::getId() {
     return this->id;

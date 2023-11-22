@@ -4,7 +4,10 @@
 #include "Uart.h"
 #include <cstdint>
 #include <memory>
-
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <string>
 
 class Shop {
 private:
