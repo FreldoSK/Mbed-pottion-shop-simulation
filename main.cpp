@@ -10,9 +10,7 @@
 #include "Shop.h"
 #include "Hero.h"
 
-
-
-int main() {
+void init() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     unsigned short numberOfHeroes = 15;  
     uint8_t capacityOfTable = 3; 
@@ -58,15 +56,17 @@ int main() {
     }
 
     
-
-
-    
-    
-
-
     free(tableBuffer);
     free(typeCounter);
     free(epicWeapons);
+}
+
+int main() {
+    init();
+
+    while (true) {
+    
+    }
 
 
 
