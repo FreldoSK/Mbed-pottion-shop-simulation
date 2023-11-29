@@ -1,4 +1,5 @@
 #include "Uart.h"
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -31,4 +32,28 @@ void Uart::initMenu() {
     writeMessage("[1] EASY");
     writeMessage("[2] NORMAL");
     writeMessage("[3] HARD");
+}
+
+void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
+    writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+    std::string numOfArch = "Number of Archers was " + std::to_string(classArray[0]);
+    writeMessage(numOfArch.c_str());
+    std::string numOfKill = "Number of Killers was " + std::to_string(classArray[1]);
+    writeMessage(numOfArch.c_str());
+    std::string numOfMag = "Number of Magicians was " + std::to_string(classArray[2]);
+    writeMessage(numOfArch.c_str());
+    std::string numOfSol = "Number of Soldiers was " + std::to_string(classArray[3]);
+    writeMessage(numOfArch.c_str());
+
+    writeMessage("\n");
+
+    std::string epicArcher = "Archers get " + std::to_string(epicArray[0]) + " epic weapons !";
+    writeMessage(epicArcher.c_str());
+    std::string epicKiller = "Killers get " + std::to_string(epicArray[1]) + " epic weapons !";
+    writeMessage(epicKiller.c_str());
+    std::string epicMagician = "Magicians get " + std::to_string(epicArray[2]) + " epic weapons !";
+    writeMessage(epicMagician.c_str());
+    std::string epicSoldiers = "Soldiers get " + std::to_string(epicArray[3]) + " epic weapons !";
+    writeMessage(epicSoldiers.c_str());
+
 }

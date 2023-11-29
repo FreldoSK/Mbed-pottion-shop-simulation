@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include "Button.h"
 
 class Shop {
 private:

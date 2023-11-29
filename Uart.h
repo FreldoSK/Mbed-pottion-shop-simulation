@@ -16,6 +16,7 @@ public:
         serial_port.set_format(8, BufferedSerial::None, 1);
     }
 
+    void printResult(uint8_t * array, uint8_t * epicArray);
     void initMenu();
     void readMessage(const char character);
     void writeMessage(const char * message);

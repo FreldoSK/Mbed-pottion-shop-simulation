@@ -8,7 +8,8 @@ void Button::sleep_ms(const uint16_t& milisec) {
 
 
 void Button::buttonInterrupt() {
-    this->value++;
+    Uart uart(USBTX, USBRX);
+    uart.initMenu();
 }
 
 uint8_t Button::getValue() {
