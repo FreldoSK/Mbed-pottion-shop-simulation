@@ -9,6 +9,7 @@
 #include "Uart.h"
 #include "Shop.h"
 #include "Hero.h"
+#include "Led.h"
 
 void init() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -19,6 +20,12 @@ void init() {
     uint8_t * typeCounter = (uint8_t*) malloc (sizeof(uint8_t) * 4);
     uint8_t * epicWeapons = (uint8_t*) malloc (sizeof(uint8_t) * 4);
 
+
+    for (int i=0; i < 4; i++) {
+        typeCounter[i] = 0;
+        epicWeapons[i] = 0;
+    }
+
     uint8_t heroTime = 1 + rand() % 2;
     uint8_t shopTime = 1 + rand() % 1;
 
@@ -26,6 +33,7 @@ void init() {
     Thread heroes_thread[numberOfHeroes];
 
     std::vector<std::shared_ptr<Hero>> heroes;
+
 
     std::shared_ptr<Data> data = std::make_unique<Data>();
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
@@ -48,14 +56,31 @@ void init() {
         heroes[i]->heroFunction(table);
     };
 
-    shop_thread.join();
+    //shop_thread.join();
 
+    /*
     for (int i=0; i < numberOfHeroes; i++) {
         heroes_thread[i].join();
-        break;
     }
+    */
+
 
     
+    Button button;
+    Led led(LED1, LED2);
+    while(1) {
+
+        if (button.getSituation()) {
+            uart->printResult(typeCounter, epicWeapons);
+            ThisThread::sleep_for(1s);   
+        }
+        led.ledPWM(50);
+    }
+
+
+
+
+
     free(tableBuffer);
     free(typeCounter);
     free(epicWeapons);

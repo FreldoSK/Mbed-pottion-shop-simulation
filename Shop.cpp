@@ -44,10 +44,4 @@ void Shop::shopFunction(const std::shared_ptr<Table>& shopTable) {
 
     uart->writeMessage("SHOP STOPED PRODUCTION OF POTIONS!!!");
 
-    ThisThread::sleep_for(3s);
-    while (true) {
-        
-    }
-  
-
 }

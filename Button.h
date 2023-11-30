@@ -1,23 +1,19 @@
 #pragma once
 #include "mbed.h"
-#include <cstdint>
-#include <memory>
-#include "Uart.h"
+
+
 
 class Button {
 private:
     InterruptIn buttonCenter;
-    uint8_t value;
-
-    void sleep_ms(const uint16_t& milisec);    
-
-
+    bool pressed;  
 public:
-    Button() : 
-    buttonCenter(BUTTON1),  value(0) {
-        buttonCenter.fall(callback(this, &Button::buttonInterrupt));
+    Button() : buttonCenter(BUTTON1), pressed(false) {
+        buttonCenter.rise(callback(this, &Button::buttonPressed));
+        buttonCenter.fall(callback(this, &Button::buttonReleased));
     }
-
-    void buttonInterrupt();
-    uint8_t getValue();
+    void buttonPressed();
+    void buttonReleased();
+    bool getSituation();
+    
 };

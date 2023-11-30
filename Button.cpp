@@ -1,17 +1,15 @@
 #include "Button.h"
 
 
-void Button::sleep_ms(const uint16_t& milisec) {
-    std::chrono::milliseconds timeInMiliseconds(milisec);
-    ThisThread::sleep_for(timeInMiliseconds);
+
+void Button::buttonPressed() {
+    this->pressed = true;
 }
 
-
-void Button::buttonInterrupt() {
-    Uart uart(USBTX, USBRX);
-    uart.initMenu();
+void Button::buttonReleased() {
+    this->pressed = false;
 }
 
-uint8_t Button::getValue() {
-    return this->value;
+bool Button::getSituation() {
+    return this->pressed;
 }

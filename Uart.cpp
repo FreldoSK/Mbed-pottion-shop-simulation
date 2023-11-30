@@ -7,7 +7,6 @@
 void Uart::readMessage(const char character) {
     while (this->serial_port.read(buffer, MAXIMUM_BUFFER_SIZE)) {
         if (buffer[0] == character) {
-            writeMessage("ENDE");
             return; 
         }
     }
@@ -28,25 +27,26 @@ void Uart::writeMessage(const char * message) {
 void Uart::initMenu() {
     clearScreen();
     writeMessage("*-*-*-*-*- POTION SHOP *-*-*-*-*-");
-    writeMessage("CHOSE DIFICULTY :");
-    writeMessage("[1] EASY");
+    writeMessage("SIMULATION OPTIONS :");
+    writeMessage("[1] Number of heroes :");
+    
+
     writeMessage("[2] NORMAL");
     writeMessage("[3] HARD");
 }
 
 void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
-    writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+    writeMessage("\n\n-*-*-*-*-*-*-*|STATS|-*-*-*-*-*-*-*");
     std::string numOfArch = "Number of Archers was " + std::to_string(classArray[0]);
     writeMessage(numOfArch.c_str());
     std::string numOfKill = "Number of Killers was " + std::to_string(classArray[1]);
-    writeMessage(numOfArch.c_str());
+    writeMessage(numOfKill.c_str());
     std::string numOfMag = "Number of Magicians was " + std::to_string(classArray[2]);
-    writeMessage(numOfArch.c_str());
+    writeMessage(numOfMag.c_str());
     std::string numOfSol = "Number of Soldiers was " + std::to_string(classArray[3]);
-    writeMessage(numOfArch.c_str());
-
-    writeMessage("\n");
-
+    writeMessage(numOfSol.c_str());
+    writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+    writeMessage("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
     std::string epicArcher = "Archers get " + std::to_string(epicArray[0]) + " epic weapons !";
     writeMessage(epicArcher.c_str());
     std::string epicKiller = "Killers get " + std::to_string(epicArray[1]) + " epic weapons !";
@@ -55,5 +55,5 @@ void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
     writeMessage(epicMagician.c_str());
     std::string epicSoldiers = "Soldiers get " + std::to_string(epicArray[3]) + " epic weapons !";
     writeMessage(epicSoldiers.c_str());
-
+    writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 }
