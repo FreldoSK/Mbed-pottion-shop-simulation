@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-
+#include <string>
 
 enum TypOfHeroe {
     SOLDIER,

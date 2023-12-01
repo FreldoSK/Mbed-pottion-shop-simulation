@@ -1,8 +1,6 @@
 #include "Shop.h"
 
 
-
-
 unsigned short Shop::getNumberOfHeroes() {
     return this->numberOfHeroes;
 }

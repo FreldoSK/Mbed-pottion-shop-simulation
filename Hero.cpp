@@ -1,5 +1,5 @@
 #include "Hero.h"
-#include <string>
+
 ;
 
 unsigned short Hero::getId() {
@@ -14,17 +14,6 @@ void Hero::setId(const unsigned short& id) {
     this->id = id;
 }
 
-
-
-/*
-std::vector<uint8_t> Hero::getTypeCounter() {
-    return this->typeCounter;
-}
-
-std::vector<uint8_t> Hero::getEpicWeaponCounter() {
-    return this->epicWeaponsCounter;
-}
-*/
 
 std::string Hero::enumToString(TypOfHeroe type) {
 

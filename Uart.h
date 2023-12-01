@@ -2,6 +2,11 @@
 #include "mbed.h"
 #include <cstdint>
 #include <cstring>
+#include <cctype>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <string>
 
 #define MAXIMUM_BUFFER_SIZE  32
 
