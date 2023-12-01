@@ -1,15 +1,102 @@
 #include "Uart.h"
+#include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
-void Uart::readMessage(const char character) {
+
+
+uint8_t Uart::getCounter() {
+    return this->counter;
+}
+
+void Uart::setCounter(const uint8_t counter) {
+    this->counter = counter;
+}
+
+void Uart::readMessage() {
     while (this->serial_port.read(buffer, MAXIMUM_BUFFER_SIZE)) {
-        if (buffer[0] == character) {
-            return; 
+        const char character = buffer[0];
+        
+        if (std::isalpha(character)) {
+
+            if (character == 'y') {
+                this->setChar('y');
+                writeMessage("y");
+                return;
+            }
+
+            if (character == 'n') {
+                this->setChar('n');
+                writeMessage("n");
+                return;
+            }  else {
+                writeMessage("ERROR : BAD INPUT ! try it again !");
+                this->setChar(' ');
+                readMessage();
+            }
+        }
+
+        if (std::isdigit(character)) {
+            switch (character) {
+            case '0':
+                this->setCounter(0);
+                writeMessage("0");
+                return;
+            case '1':
+                this->setCounter(1);
+                writeMessage("1");
+                return;
+            case '2':
+                this->setCounter(2);
+                writeMessage("2");
+                return;
+            case '3':
+                this->setCounter(3);
+                writeMessage("3");
+                return;
+            case '4':
+                this->setCounter(4);
+                writeMessage("4");
+                return;
+            case '5':
+                this->setCounter(5);
+                writeMessage("5");
+                return;
+            case '6':
+                this->setCounter(6);
+                writeMessage("6");
+                return;
+            case '7':
+                this->setCounter(7);
+                writeMessage("7");
+                return;                                                
+            case '8':
+                this->setCounter(8);
+                writeMessage("8");
+                return;
+            case '9':
+                this->setCounter(9);
+                writeMessage("9");
+                return;
+            default:
+                writeMessage("ERROR, TRY AGAIN !!!");
+                readMessage();    
+            }
+        } else {
+            writeMessage("BAD INPUT ! TRY AGAIN!!!");
+            readMessage();
         }
     }
+}
+
+void Uart::setChar(const char character) {
+    this->character = character;
+}
+
+char Uart::getChar() {
+    return this->character;
 }
 
 void Uart::clearScreen() {
@@ -56,4 +143,9 @@ void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
     std::string epicSoldiers = "Soldiers get " + std::to_string(epicArray[3]) + " epic weapons !";
     writeMessage(epicSoldiers.c_str());
     writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+
+
+    writeMessage("Do you wanna repeat simulation again ? y/n");
+
+    readMessage();  
 }

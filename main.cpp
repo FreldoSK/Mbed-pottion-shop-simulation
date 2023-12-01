@@ -1,98 +1,127 @@
-#include <algorithm>
-#include <cstdint>
+#include "main.h"
 #include <cstdlib>
-#include <memory>
-#include <string>
-#include <vector>
-#include "mbed.h"
-#include "Table.h"
-#include "Uart.h"
-#include "Shop.h"
-#include "Hero.h"
-#include "Led.h"
 
-void init() {
+
+
+int main() {
+    std::shared_ptr<Details> details = std::make_shared<Details>();
+    std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
+
+    initStart(uart, details);
+    gamePlay(uart, details);
+}
+
+
+void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    unsigned short numberOfHeroes = 15;  
-    uint8_t capacityOfTable = 3; 
+    
     uint8_t actualCapacityOfTable = 0;
-    uint8_t * tableBuffer = (uint8_t*) malloc (sizeof(uint8_t) * capacityOfTable);
+    uint8_t * tableBuffer = (uint8_t*) malloc (sizeof(uint8_t) * details->capacityOfTable);
     uint8_t * typeCounter = (uint8_t*) malloc (sizeof(uint8_t) * 4);
     uint8_t * epicWeapons = (uint8_t*) malloc (sizeof(uint8_t) * 4);
 
 
-    for (int i=0; i < 4; i++) {
+    for(int i=0; i < 4; i++) {
         typeCounter[i] = 0;
         epicWeapons[i] = 0;
     }
 
-    uint8_t heroTime = 1 + rand() % 2;
-    uint8_t shopTime = 1 + rand() % 1;
-
     Thread shop_thread;
-    Thread heroes_thread[numberOfHeroes];
+    Thread heroes_thread[details->numberOfHeroes];
 
     std::vector<std::shared_ptr<Hero>> heroes;
 
-
     std::shared_ptr<Data> data = std::make_unique<Data>();
-    std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
-    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, capacityOfTable, data);
-    std::shared_ptr<Shop> shop = std::make_shared<Shop>(shopTime, numberOfHeroes, uart);
+    
+    std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, details->capacityOfTable, data);
+    std::shared_ptr<Shop> shop = std::make_shared<Shop>(details->shopTime, details->numberOfHeroes, uart);
   
-    for (int i = 0; i < numberOfHeroes; i++) {
+    for (int i = 0; i < details->numberOfHeroes; i++) {
         TypOfHeroe randomHeroType = static_cast<TypOfHeroe>(std::rand() % (ARCHER + 1));
-        uint8_t idOfHero = 1 + rand() % numberOfHeroes;
+        uint8_t idOfHero = 1 + rand() % details->numberOfHeroes;
         uint8_t chance = 1 + rand() % 10;
 
-        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart, heroTime, chance, typeCounter, epicWeapons));
+        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart, details->heroTime, chance, typeCounter, epicWeapons));
     }
 
     shop_thread.start([&]() {
         shop->shopFunction(table);
     });
 
-    for (int i=0; i < numberOfHeroes; i++) {
+    for (int i=0; i < details->numberOfHeroes; i++) {
         heroes[i]->heroFunction(table);
     };
 
-    //shop_thread.join();
+    Button * button = new Button();
+    Led * led = new Led(LED1, LED2);
 
-    /*
-    for (int i=0; i < numberOfHeroes; i++) {
-        heroes_thread[i].join();
-    }
-    */
-
-
-    
-    Button button;
-    Led led(LED1, LED2);
-    while(1) {
-
-        if (button.getSituation()) {
+    while(true) {
+        if (button->getSituation()) {
             uart->printResult(typeCounter, epicWeapons);
-            ThisThread::sleep_for(1s);   
+
+            if (uart->getChar() == 'y') {   
+                free(tableBuffer);
+                free(typeCounter);
+                free(epicWeapons);
+                delete button;
+                uart->clearScreen();
+                initStart(uart, details);
+            } else {
+                for(int i=0; i < 3; i++) {
+                    led->redLight(true);
+                    ThisThread::sleep_for(1s);
+                }
+
+                led->redLight(false);    
+                uart->writeMessage("Thanks for playing !!!");
+                exit(0);
+                
+            }
         }
-        led.ledPWM(50);
+        led->ledPWM(100);
     }
+    
+    led->greenLight(false);
+    led->redLight(false);
 
-
-
-
-
+    delete button;
+    delete led;
     free(tableBuffer);
     free(typeCounter);
     free(epicWeapons);
+    exit(0);
 }
 
-int main() {
-    init();
 
-    while (true) {
-    
+void initStart(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+    uart->writeMessage("==========|-POTION QUESTS SIMMULATION-|==========");
+    uart->writeMessage("[1] Select number of heroes !");
+    uart->readMessage();
+    details->numberOfHeroes = uart->getCounter();
+    uart->setCounter(-1);
+
+    uart->writeMessage("[2] Select capacity of table !");
+    uart->readMessage();
+
+    details->capacityOfTable = uart->getCounter();
+    if (details->capacityOfTable == 0) {
+        uart->writeMessage("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        exit(0);
     }
 
+    uart->setCounter(-1);
 
+    uart->writeMessage("[3] Select time for hero delay !");
+    uart->readMessage();
+    details->heroTime = uart->getCounter();
+    uart->setCounter(-1);
 
+    uart->writeMessage("[4] Select delay for shop!");
+    uart->readMessage();
+    details->shopTime = uart->getCounter();
+    uart->setCounter(-1);
+    uart->clearScreen(); 
+    gamePlay(uart, details);                     
 }
+
