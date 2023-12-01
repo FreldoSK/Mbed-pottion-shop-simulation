@@ -9,6 +9,7 @@
 
 struct Data {
     Mutex mutex;
+    Mutex epixMutex;
     ConditionVariable buyPotion;
     ConditionVariable takePotion;
 
@@ -25,8 +26,8 @@ private:
     uint8_t capacityOfTable;
 
 public:
-    Table(uint8_t * tableBuffer, uint8_t actualCapatcityOfTable, uint8_t index, uint8_t capacityOfTable, std::shared_ptr<Data> data)
-    : tableBuffer(tableBuffer), actualCapatcityOfTable(actualCapatcityOfTable), index(index), capacityOfTable(capacityOfTable), data(data) {}
+    Table(uint8_t * tableBuffer, uint8_t actualCapatcityOfTable, uint8_t capacityOfTable, std::shared_ptr<Data> data)
+    : tableBuffer(tableBuffer), actualCapatcityOfTable(actualCapatcityOfTable), index(0), capacityOfTable(capacityOfTable), data(data) {}
     uint8_t * getTableBuffer();
     void setTableBuffer(const uint8_t * tableBuffer);
     uint8_t getactualCapacityOfTable();
