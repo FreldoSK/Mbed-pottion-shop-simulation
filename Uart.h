@@ -30,7 +30,6 @@ public:
     void setChar(const char character);
     char getChar();
     void printResult(uint8_t * array, uint8_t * epicArray);
-    void initMenu();
     void readMessage();
     void writeMessage(const char * message);
     void clearScreen();

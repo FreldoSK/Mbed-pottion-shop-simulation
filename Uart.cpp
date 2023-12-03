@@ -107,16 +107,6 @@ void Uart::writeMessage(const char * message) {
     ThisThread::sleep_for(100ms);
 }
 
-void Uart::initMenu() {
-    clearScreen();
-    writeMessage("*-*-*-*-*- POTION SHOP *-*-*-*-*-");
-    writeMessage("SIMULATION OPTIONS :");
-    writeMessage("[1] Number of heroes :");
-    
-
-    writeMessage("[2] NORMAL");
-    writeMessage("[3] HARD");
-}
 
 void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
     writeMessage("\n\n-*-*-*-*-*-*-*|STATS|-*-*-*-*-*-*-*");
