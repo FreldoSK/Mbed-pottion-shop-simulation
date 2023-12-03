@@ -1,4 +1,5 @@
 #include "main.h"
+#include <memory>
 
 
 
@@ -49,9 +50,14 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
         shop->shopFunction(table);
     });
 
-    for (int i=0; i < details->numberOfHeroes; i++) {
+
+    for (int i = 0; i < details->numberOfHeroes; i++) {
+        heroes_thread[i].start([&, i]() {
         heroes[i]->heroFunction(table);
-    };
+    });
+}
+
+  
 
     Button * button = new Button();
     Led * led = new Led(LED1, LED2);
