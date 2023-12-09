@@ -1,8 +1,5 @@
 #include "Uart.h"
 
-
-
-
 uint8_t Uart::getCounter() {
     return this->counter;
 }

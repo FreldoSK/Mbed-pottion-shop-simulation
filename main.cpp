@@ -1,15 +1,29 @@
 #include "main.h"
-#include <memory>
-
-
-
 
 int main() {
-    std::shared_ptr<Details> details = std::make_shared<Details>();
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
+    std::shared_ptr<Details> details = std::make_shared<Details>();
 
-    initStart(uart, details);
+
+    boardOrJoy(uart, details);
     gamePlay(uart, details);
+}
+
+
+void boardOrJoy(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+    uart->writeMessage("Do you wanna use keyboard ? y/n");
+    uart->readMessage();
+    std::unique_ptr<Joystick> joystick = std::make_unique<Joystick>();
+    
+    while(true) {
+        if (uart->getChar() == 'y' || joystick->getResponse() == 2) {
+            uart->clearScreen();
+            initStartBoard(uart, details);    
+        } else {
+            uart->clearScreen();
+            initStartJoy(uart, details, joystick);
+        }
+    }
 }
 
 
@@ -19,8 +33,8 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
     
     uint8_t actualCapacityOfTable = 0;
     uint8_t * tableBuffer = (uint8_t*) malloc (sizeof(uint8_t) * details->capacityOfTable);
-    uint8_t * typeCounter = (uint8_t*) malloc (sizeof(uint8_t) * 4);
-    uint8_t * epicWeapons = (uint8_t*) malloc (sizeof(uint8_t) * 4);
+    uint8_t * typeCounter = (uint8_t*) malloc (sizeof(uint8_t) * NUM_OF_CLASSES);
+    uint8_t * epicWeapons = (uint8_t*) malloc (sizeof(uint8_t) * NUM_OF_CLASSES);
 
 
     for(int i=0; i < 4; i++) {
@@ -57,22 +71,24 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
     });
 }
 
-  
 
     Button * button = new Button();
     Led * led = new Led(LED1, LED2);
+    Joystick * joystick = new Joystick();
 
     while(true) {
         if (button->getSituation()) {
             uart->printResult(typeCounter, epicWeapons);
 
-            if (uart->getChar() == 'y') {   
+
+            if (uart->getChar() == 'y' || joystick->getResponse() == 2) {   
                 free(tableBuffer);
                 free(typeCounter);
                 free(epicWeapons);
                 delete button;
+                delete joystick;
                 uart->clearScreen();
-                initStart(uart, details);
+                boardOrJoy(uart, details);
             } else {
                 for(int i=0; i < 3; i++) {
                     led->redLight(true);
@@ -93,6 +109,7 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
 
     delete button;
     delete led;
+    delete joystick;
     free(tableBuffer);
     free(typeCounter);
     free(epicWeapons);
@@ -100,7 +117,7 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
 }
 
 
-void initStart(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+void initStartBoard(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
     uart->writeMessage("==========|-POTION QUESTS SIMMULATION-|==========");
     uart->writeMessage("[1] Select number of heroes !");
     uart->readMessage();
@@ -108,7 +125,7 @@ void initStart(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& deta
     uart->setCounter(-1);
 
     uart->writeMessage("[2] Select capacity of table !");
-    uart->readMessage();
+    uart->readMessage ();
 
     details->capacityOfTable = uart->getCounter();
     if (details->capacityOfTable == 0) {
@@ -131,3 +148,27 @@ void initStart(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& deta
     gamePlay(uart, details);                     
 }
 
+void initStartJoy(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details, const std::unique_ptr<Joystick>& joystick) {
+    uart->writeMessage("==========|-POTION QUESTS SIMMULATION-|==========");
+    uart->writeMessage("[1] Select number of heroes !");
+    joystick->joyPressed(uart, details);
+    details->numberOfHeroes = joystick->getCounter();
+    joystick->setCounter(0);
+
+    uart->writeMessage("[2] Select capacity of table !");
+    joystick->joyPressed(uart, details);
+    details->capacityOfTable = joystick->getCounter();
+    joystick->setCounter(0);
+
+    uart->writeMessage("[3] Select time for hero delay !");
+    joystick->joyPressed(uart, details);
+    details->heroTime = joystick->getCounter();
+    joystick->setCounter(0);
+
+    uart->writeMessage("[4] Select delay for shop!");
+    joystick->joyPressed(uart, details);
+    details->shopTime = joystick->getCounter();
+    joystick->setCounter(0);
+    uart->clearScreen(); 
+    gamePlay(uart, details); 
+}
