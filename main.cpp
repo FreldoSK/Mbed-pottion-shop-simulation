@@ -1,33 +1,43 @@
 #include "main.h"
 
+
 int main() {
     std::shared_ptr<Uart> uart = std::make_shared<Uart>(USBTX, USBRX);
     std::shared_ptr<Details> details = std::make_shared<Details>();
+    std::unique_ptr<Joystick> joystick = std::make_unique<Joystick>();
+
+    boardOrJoy(uart, joystick, details);
+    gamePlay(uart, joystick, details);
 
 
-    boardOrJoy(uart, details);
-    gamePlay(uart, details);
 }
 
 
-void boardOrJoy(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+void boardOrJoy(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joystick, const std::shared_ptr<Details>& details) {
+    
     uart->writeMessage("Do you wanna use keyboard ? y/n");
     uart->readMessage();
-    std::unique_ptr<Joystick> joystick = std::make_unique<Joystick>();
-    
+
     while(true) {
-        if (uart->getChar() == 'y' || joystick->getResponse() == 2) {
+        
+
+
+
+        if (uart->getChar() == 'y') {
+            details->joystick = false;
             uart->clearScreen();
-            initStartBoard(uart, details);    
+            initStartBoard(uart, joystick, details);    
         } else {
+            details->joystick = true;
             uart->clearScreen();
+            
             initStartJoy(uart, details, joystick);
         }
     }
 }
 
 
-void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joystick, const std::shared_ptr<Details>& details) {
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     
@@ -74,50 +84,74 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& detai
 
     Button * button = new Button();
     Led * led = new Led(LED1, LED2);
-    Joystick * joystick = new Joystick();
 
-    while(true) {
+
+    while (true) {
+        if (data->ended) {
+            led->ledPWM(100);
+        }
+         
         if (button->getSituation()) {
             uart->printResult(typeCounter, epicWeapons);
+            break;
+        }
+    }
+
+    delete button;
 
 
-            if (uart->getChar() == 'y' || joystick->getResponse() == 2) {   
+    while (true) {
+        if (data->ended && details->joystick) {
+            uart->writeMessage("Do you wanna restart simulation again ? [LEFT] yes/no [RIGHT]");
+            joystick->yesOrNo(uart);
+
+            if (joystick->getResponse() == 2) {
+                uart->clearScreen();
+                details->joystick = false;
                 free(tableBuffer);
                 free(typeCounter);
                 free(epicWeapons);
-                delete button;
-                delete joystick;
+                delete led;
+                boardOrJoy(uart, joystick, details);
+            } else {
+                 for(int i=0; i < 3; i++) {
+                    led->redLight(true);
+                    ThisThread::sleep_for(1s);
+                 }
+                led->redLight(false);    
+                uart->writeMessage("Thanks for playing !!!");
+                break;
+            }   
+        }
+        
+        if (data->ended && !details->joystick) {
+            uart->writeMessage("Do you wanna restart simulation again ? [y] yes/no [n]");
+            uart->readMessage();
+            if (uart->getChar() == 'y') {
                 uart->clearScreen();
-                boardOrJoy(uart, details);
+                free(tableBuffer);
+                free(typeCounter);
+                free(epicWeapons);
+                delete led;
+                boardOrJoy(uart, joystick, details);
             } else {
                 for(int i=0; i < 3; i++) {
                     led->redLight(true);
                     ThisThread::sleep_for(1s);
                 }
-
-                led->redLight(false);    
-                uart->writeMessage("Thanks for playing !!!");
-                exit(0);
-                
+                break;
             }
         }
-        led->ledPWM(100);
     }
-    
-    led->greenLight(false);
-    led->redLight(false);
-
-    delete button;
-    delete led;
-    delete joystick;
     free(tableBuffer);
     free(typeCounter);
     free(epicWeapons);
+    delete led;
     exit(0);
 }
 
 
-void initStartBoard(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details) {
+void initStartBoard(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joystick, const std::shared_ptr<Details>& details) {
     uart->writeMessage("==========|-POTION QUESTS SIMMULATION-|==========");
     uart->writeMessage("[1] Select number of heroes !");
     uart->readMessage();
@@ -145,30 +179,30 @@ void initStartBoard(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>&
     details->shopTime = uart->getCounter();
     uart->setCounter(-1);
     uart->clearScreen(); 
-    gamePlay(uart, details);                     
+    gamePlay(uart, joystick, details);                     
 }
 
 void initStartJoy(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details, const std::unique_ptr<Joystick>& joystick) {
     uart->writeMessage("==========|-POTION QUESTS SIMMULATION-|==========");
     uart->writeMessage("[1] Select number of heroes !");
-    joystick->joyPressed(uart, details);
+    joystick->joyPressed(uart);
     details->numberOfHeroes = joystick->getCounter();
     joystick->setCounter(0);
 
     uart->writeMessage("[2] Select capacity of table !");
-    joystick->joyPressed(uart, details);
+    joystick->joyPressed(uart);
     details->capacityOfTable = joystick->getCounter();
     joystick->setCounter(0);
 
     uart->writeMessage("[3] Select time for hero delay !");
-    joystick->joyPressed(uart, details);
+    joystick->joyPressed(uart);
     details->heroTime = joystick->getCounter();
     joystick->setCounter(0);
 
     uart->writeMessage("[4] Select delay for shop!");
-    joystick->joyPressed(uart, details);
+    joystick->joyPressed(uart);
     details->shopTime = joystick->getCounter();
     joystick->setCounter(0);
     uart->clearScreen(); 
-    gamePlay(uart, details); 
+    gamePlay(uart, joystick, details); 
 }

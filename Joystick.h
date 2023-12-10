@@ -6,12 +6,7 @@
 #include <string>
 
 
-struct Details {
-    unsigned short numberOfHeroes;  
-    uint8_t capacityOfTable; 
-    uint8_t heroTime;
-    uint8_t shopTime;
-};
+
 
 class Joystick {
 private:
@@ -32,7 +27,8 @@ public:
     bool getSkiped();
     uint8_t getResponse();
     void setResponse(const uint8_t& response);
-    void joyPressed(std::shared_ptr<Uart>& uart, const std::shared_ptr<Details>& details);
+    void joyPressed(std::shared_ptr<Uart>& uart);
+    void yesOrNo(std::shared_ptr<Uart>& uart);
     uint16_t getCounter();
     void setCounter(const uint16_t& counter); 
 };

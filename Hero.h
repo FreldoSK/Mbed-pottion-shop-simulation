@@ -19,7 +19,7 @@ enum TypOfHeroe {
 
 class Hero {
 private:
-    unsigned short id;
+    uint8_t id;
     TypOfHeroe typ;
     std::shared_ptr<Uart> uart;
     uint8_t time;
@@ -34,15 +34,10 @@ public:
     uint8_t * typeCounter, uint8_t * epicWeaponsCounter)
     : id(id), typ(typ), uart(uart), time(time), epicChance(epicChance), typeCounter(typeCounter), epicWeaponsCounter(epicWeaponsCounter) {}
     TypOfHeroe getType();
-    unsigned short getId();
-    void setId(const unsigned short& id);
+    uint8_t getId();
+    void setId(const uint8_t& id);
     void heroFunction(const std::shared_ptr<Table>& heroTable);
 
-
-    /*
-    std::vector<uint8_t> getTypeCounter();
-    std::vector<uint8_t> getEpicWeaponCounter();
-    */ 
 };
 
 

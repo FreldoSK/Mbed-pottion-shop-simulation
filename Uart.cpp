@@ -126,9 +126,4 @@ void Uart::printResult(uint8_t * classArray, uint8_t * epicArray) {
     std::string epicSoldiers = "Soldiers get " + std::to_string(epicArray[3]) + " epic weapons !";
     writeMessage(epicSoldiers.c_str());
     writeMessage("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-
-
-    writeMessage("Do you wanna repeat simulation again ? y/n");
-
-    readMessage();  
 }

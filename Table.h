@@ -13,8 +13,9 @@ struct Data {
     Mutex epixMutex;
     ConditionVariable buyPotion;
     ConditionVariable takePotion;
+    bool ended; 
 
-    Data() : buyPotion(mutex), takePotion(mutex) {}
+    Data() : buyPotion(mutex), takePotion(mutex), ended(false) {}
 };
 
 

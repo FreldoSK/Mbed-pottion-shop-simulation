@@ -1,8 +1,7 @@
 #include "Hero.h"
 
-;
 
-unsigned short Hero::getId() {
+uint8_t Hero::getId() {
     return this->id;
 }
 
@@ -10,7 +9,7 @@ TypOfHeroe Hero::getType() {
     return this->typ;
 }
 
-void Hero::setId(const unsigned short& id) {
+void Hero::setId(const uint8_t& id) {
     this->id = id;
 }
 
