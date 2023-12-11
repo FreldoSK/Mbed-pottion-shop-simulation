@@ -1,8 +1,5 @@
 #include "Table.h"
 
-
-
-
 uint8_t * Table::getTableBuffer() {
     return this->tableBuffer;
 }

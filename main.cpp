@@ -106,6 +106,10 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
             joystick->yesOrNo(uart);
 
             if (joystick->getResponse() == 2) {
+                shop_thread.join();
+                for (int i=0; i < details->numberOfHeroes; i++) {
+                    heroes_thread[i].join();
+                }
                 uart->clearScreen();
                 details->joystick = false;
                 free(tableBuffer);
@@ -128,6 +132,11 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
             uart->writeMessage("Do you wanna restart simulation again ? [y] yes/no [n]");
             uart->readMessage();
             if (uart->getChar() == 'y') {
+                shop_thread.join();
+                for (int i=0; i < details->numberOfHeroes; i++) {
+                    heroes_thread[i].join();
+                }
+
                 uart->clearScreen();
                 free(tableBuffer);
                 free(typeCounter);

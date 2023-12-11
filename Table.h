@@ -10,7 +10,6 @@
 
 struct Data {
     Mutex mutex;
-    Mutex epixMutex;
     ConditionVariable buyPotion;
     ConditionVariable takePotion;
     bool ended; 
