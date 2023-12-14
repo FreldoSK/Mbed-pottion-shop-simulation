@@ -1,4 +1,5 @@
 #include "main.h"
+#include <vector>
 
 
 int main() {
@@ -49,32 +50,34 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
     Thread shop_thread;
     Thread heroes_thread[details->numberOfHeroes];
 
-    std::vector<std::shared_ptr<Hero>> heroes;
 
     std::shared_ptr<Data> data = std::make_unique<Data>();
     
     std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, details->capacityOfTable, data);
-    std::shared_ptr<Shop> shop = std::make_shared<Shop>(details->shopTime, details->numberOfHeroes, uart);
+    
+    Shop shop(details->shopTime, details->numberOfHeroes, uart);
+    std::vector<Hero> heroes; 
     
     
+    heroes.clear();
     for (int i = 0; i < details->numberOfHeroes; i++) {
         TypOfHeroe randomHeroType = static_cast<TypOfHeroe>(std::rand() % (ARCHER + 1));
         uint8_t idOfHero = 1 + rand() % details->numberOfHeroes;
         uint8_t chance = 1 + rand() % 10;
 
-        heroes.push_back(std::make_shared<Hero>(idOfHero, randomHeroType, uart, details->heroTime, chance, typeCounter, epicWeapons));
+        heroes.emplace_back(idOfHero, randomHeroType, uart, details->heroTime, chance, typeCounter, epicWeapons);
     }
 
     shop_thread.start([&]() {
-        shop->shopFunction(table);
+        shop.shopFunction(table);
     });
-
 
     for (int i = 0; i < details->numberOfHeroes; i++) {
         heroes_thread[i].start([&, i]() {
-        heroes[i]->heroFunction(table);
-    });
-}
+            heroes[i].heroFunction(table);
+        });
+    }
+
 
 
     Button * button = new Button();
@@ -95,16 +98,18 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
     delete button;
 
 
+    shop_thread.join();
+    for (int i=0; i < details->numberOfHeroes; i++) {
+        heroes_thread[i].join();
+    }
+
+
     while (true) {
         if (data->ended && details->joystick) {
             uart->writeMessage("Do you wanna restart simulation again ? [LEFT] yes/no [RIGHT]");
             joystick->yesOrNo(uart);
 
             if (joystick->getResponse() == 2) {
-                shop_thread.join();
-                for (int i=0; i < details->numberOfHeroes; i++) {
-                    heroes_thread[i].join();
-                }
                 uart->clearScreen();
                 details->joystick = false;
                 free(tableBuffer);
@@ -127,11 +132,6 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
             uart->writeMessage("Do you wanna restart simulation again ? [y] yes/no [n]");
             uart->readMessage();
             if (uart->getChar() == 'y') {
-                shop_thread.join();
-                for (int i=0; i < details->numberOfHeroes; i++) {
-                    heroes_thread[i].join();
-                }
-
                 uart->clearScreen();
                 free(tableBuffer);
                 free(typeCounter);
@@ -143,6 +143,8 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
                     led->redLight(true);
                     ThisThread::sleep_for(1s);
                 }
+                led->redLight(false);    
+                uart->writeMessage("Thanks for playing !!!");
                 break;
             }
         }
