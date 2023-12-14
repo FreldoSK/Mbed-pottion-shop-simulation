@@ -16,5 +16,5 @@ public:
     void buttonPressed();
     void buttonReleased();
     bool getSituation();
-
+    ~Button();
 };

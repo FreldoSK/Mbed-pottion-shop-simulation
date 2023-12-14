@@ -7,8 +7,6 @@ int main() {
     std::unique_ptr<Joystick> joystick = std::make_unique<Joystick>();
 
     boardOrJoy(uart, joystick, details);
-    gamePlay(uart, joystick, details);
-
 
 }
 
@@ -19,10 +17,6 @@ void boardOrJoy(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& jo
     uart->readMessage();
 
     while(true) {
-        
-
-
-
         if (uart->getChar() == 'y') {
             details->joystick = false;
             uart->clearScreen();
@@ -38,7 +32,7 @@ void boardOrJoy(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& jo
 
 
 void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joystick, const std::shared_ptr<Details>& details) {
-
+    
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     
     uint8_t actualCapacityOfTable = 0;
@@ -61,7 +55,8 @@ void gamePlay(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>& joys
     
     std::shared_ptr<Table> table = std::make_shared<Table>(tableBuffer, actualCapacityOfTable, details->capacityOfTable, data);
     std::shared_ptr<Shop> shop = std::make_shared<Shop>(details->shopTime, details->numberOfHeroes, uart);
-  
+    
+    
     for (int i = 0; i < details->numberOfHeroes; i++) {
         TypOfHeroe randomHeroType = static_cast<TypOfHeroe>(std::rand() % (ARCHER + 1));
         uint8_t idOfHero = 1 + rand() % details->numberOfHeroes;
@@ -168,7 +163,7 @@ void initStartBoard(std::shared_ptr<Uart>& uart, const std::unique_ptr<Joystick>
     uart->setCounter(-1);
 
     uart->writeMessage("[2] Select capacity of table !");
-    uart->readMessage ();
+    uart->readMessage();
 
     details->capacityOfTable = uart->getCounter();
     if (details->capacityOfTable == 0) {

@@ -19,6 +19,8 @@ public:
 Led(const PinName &greenPin, const PinName &redPin) : 
     red(redPin), green(greenPin)  {}
 
+~Led();
+
 void greenLight(bool light);
 void redLight(bool light);
 void ledPWM(const uint16_t& time);

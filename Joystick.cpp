@@ -27,7 +27,7 @@ void Joystick::joyPressed(std::shared_ptr<Uart>& uart) {
                 return;  
             } else {
                 uart->writeMessage("BAD INPUT !");
-                joyPressed(uart);
+                continue;
             }
         }
     }

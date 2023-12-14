@@ -14,3 +14,7 @@ void Button::buttonReleased() {
 bool Button::getSituation() {
     return this->pressed;
 }
+
+Button::~Button() {
+    
+}
